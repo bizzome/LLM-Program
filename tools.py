@@ -1,4 +1,5 @@
 import httpx
+from googlesearch import search
 
 
 def wikipedia(q):
@@ -14,7 +15,12 @@ def wikipedia(q):
 
 
 def google_search(q):
-    return NotImplementedError(f"Google search not implemented yet for {q}")
+    """Returns a list of SearchResult from a Google search.
+    Properties:
+    - title
+    - url
+    - description"""
+    return search(q, advanced=True)
 
 
 def calculate(what):
