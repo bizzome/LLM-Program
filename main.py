@@ -1,4 +1,5 @@
 import re
+import argparse
 
 from tools import wikipedia, calculate, google_search
 from chatbot import ChatBot
@@ -14,15 +15,16 @@ Your available actions are:
 
 calculate:
 e.g. calculate: 4 * 7 / 3
-Runs a calculation and returns the number - uses Python so be sure to use floating point syntax if necessary
+Runs a calculation and returns the number - uses Python so be sure to use
+floating point syntax if necessary
 
 wikipedia:
 e.g. wikipedia: Django
 Returns a summary from searching Wikipedia
 
-simon_blog_search:
-e.g. simon_blog_search: Django
-Search Simon's blog for that term
+google_search:
+e.g. google_search: Django
+Search with google for that term
 
 Always look things up on Wikipedia if you have the opportunity to do so.
 
@@ -46,7 +48,14 @@ Answer: The capital of France is Paris
 action_re = re.compile("^Action: (\w+): (.*)$")
 
 
-def query(question, max_turns=5):
+known_actions = {
+    "wikipedia": wikipedia,
+    "calculate": calculate,
+    "google_search": google_search,
+}
+
+
+def query(question, max_turns=6):
     i = 0
     bot = ChatBot(prompt)
     next_prompt = question
@@ -74,8 +83,21 @@ def query(question, max_turns=5):
             return
 
 
-known_actions = {
-    "wikipedia": wikipedia,
-    "calculate": calculate,
-    "google_search": google_search,
-}
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--query",
+        type=str,
+        required=True,
+        help=(
+            "Query to search on chatbot, e.g. --query 'Python "
+            "(programming language)'."
+        ),
+    )
+    args = parser.parse_args()
+    return args.query
+
+
+if __name__ == "__main__":
+    question = get_args()
+    query(question)
