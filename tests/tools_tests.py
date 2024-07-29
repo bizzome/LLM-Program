@@ -9,8 +9,11 @@ class TestTools(unittest.TestCase):
         self.assertEqual(
             wikipedia("Python"),
             (
-                "Python is an interpreted high-level general-purpose"
-                "programming language."
+                'Look up <span class="searchmatch">Python</span>\xa0or '
+                '<span class="searchmatch">python</span> in Wiktionary, '
+                'the free dictionary. <span class="searchmatch">Python</'
+                "span> may refer to: Pythonidae, a family of nonvenomous"
+                " snakes found in Africa, Asia, and"
             ),
         )
 
