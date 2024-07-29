@@ -1,7 +1,7 @@
 import re
 import argparse
 
-from tools import wikipedia, calculate, google_search
+from chatbot.tools import wikipedia, calculate, google_search
 from chatbot import ChatBot
 
 prompt = """

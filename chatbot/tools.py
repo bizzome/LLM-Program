@@ -20,7 +20,7 @@ def google_search(q):
     - title
     - url
     - description"""
-    return search(q, advanced=True)
+    return list(search(q, advanced=True))
 
 
 def calculate(what):
