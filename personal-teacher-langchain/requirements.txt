@@ -1,0 +1,7 @@
+python-dotenv
+langgraph
+typing
+langchain_core
+langchain_openai
+langchain_community
+colorama
