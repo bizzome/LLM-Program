@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import argparse
-import sys
 
 from langgraph.graph import StateGraph, END
 from typing import TypedDict, Annotated
@@ -8,20 +7,20 @@ import operator
 from langchain_core.messages import (
     AnyMessage,
     SystemMessage,
-    HumanMessage,
     ToolMessage,
 )
+
 from langchain_openai import ChatOpenAI
 from langchain_community.tools.tavily_search import TavilySearchResults
 
-from colorama import Fore, Back, Style
+from test import EarlyTests
 
 
 _ = load_dotenv()
 
 tool = TavilySearchResults(max_results=4)  # increased number of results
-print(type(tool))
-print(tool.name)
+#print(type(tool))
+#print(tool.name)
 
 
 class AgentState(TypedDict):
@@ -60,7 +59,7 @@ class Agent:
         results = []
         for t in tool_calls:
             print(f"Calling: {t}")
-            if not t["name"] in self.tools:  # check for bad tool name from LLM
+            if t["name"] not in self.tools:  # check for bad tool name from LLM
                 print("\n ....bad tool name....")
                 result = "bad tool name, retry"  # instruct LLM to retry if bad
             else:
@@ -86,53 +85,8 @@ prompt = """Você é um assistente de pesquisa inteligente. Use a search \
 model_35 = ChatOpenAI(model="gpt-3.5-turbo")  # reduce inference cost
 abot_35 = Agent(model_35, [tool], system=prompt)
 
-
-def send_one_simple_question(query: str = "Qual o tempo em São Paulo?"):
-    messages = [HumanMessage(content=query)]
-    result = abot_35.graph.invoke({"messages": messages})
-
-    # print(result)
-    print(Fore.GREEN + result["messages"][-1].content)
-    print(Style.RESET_ALL)
-
-
-def send_two_simple_questions(
-    query: str = "Qual o tempo em São Paulo? Qual o tempo em Piracicaba?",
-):
-    messages = [HumanMessage(content=query)]
-    result = abot_35.graph.invoke({"messages": messages})
-
-    print(
-        Fore.GREEN
-        + "Última mensagem: {}".format(result["messages"][-1].content)
-    )
-    print(Style.RESET_ALL)
-
-
-# Note, the query was modified to produce more consistent results.
-# Results may vary per run and over time as search information and models change.
-def send_one_complex_question(
-    query: str = "Quando foram as últimas olimpíadas? \
-    Qual país ganhou mais medalhas de ouro? \
-    Quantos habitantes possui este país? \
-    Responda cada pergunta.",
-):
-    messages = [HumanMessage(content=query)]
-
-    model = ChatOpenAI(model="gpt-4o")  # requires more advanced model
-    abot = Agent(model, [tool], system=prompt)
-    result = abot.graph.invoke({"messages": messages})
-
-    print(
-        Fore.GREEN
-        + "Conteúdo da última mensagem: {}".format(
-            result["messages"][-1].content
-        )
-    )
-    print(Style.RESET_ALL)
-
-
 def main():
+    function_tests = EarlyTests()
     parser = argparse.ArgumentParser(description="Run the agent with a query.")
     parser.add_argument(
         "--query",
@@ -142,12 +96,12 @@ def main():
     args = parser.parse_args()
 
     if args.query:
-        send_one_complex_question(args.query)
+        function_tests.send_one_complex_question(args.query)
     else:
         print("==== RUNNING DEFAULT EXAMPLES ====")
-        send_one_simple_question()
-        send_two_simple_questions()
-        send_one_complex_question()
+        function_tests.send_one_simple_question()
+        function_tests.send_two_simple_questions()
+        function_tests.send_one_complex_question()
 
 
 if __name__ == "__main__":
